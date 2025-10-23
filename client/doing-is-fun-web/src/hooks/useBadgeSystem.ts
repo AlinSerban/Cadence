@@ -5,23 +5,23 @@ import type { Badge } from '../types/activityBoard';
 
 export function useBadgeSystem() {
     const [recentlyUnlocked, setRecentlyUnlocked] = useState<Badge[]>([]);
-    const badges = useSelector((state: RootState) => state.badge.badges || []);
-    const isLoading = useSelector((state: RootState) => state.badge.isLoading);
+    const badges = useSelector((state: RootState) => state.badge.unlocked || []);
+    const isLoading = false; // BadgeState doesn't have isLoading
 
     const getBadgeById = useCallback((badgeId: string) => {
-        return badges.find(badge => badge.id === badgeId);
+        return badges.find((badge: Badge) => badge.id === badgeId);
     }, [badges]);
 
     const getBadgesByCategory = useCallback((category: string) => {
-        return badges.filter(badge => badge.category === category);
+        return badges.filter((badge: Badge) => badge.category === category);
     }, [badges]);
 
     const getUnlockedBadges = useCallback(() => {
-        return badges.filter(badge => badge.unlocked);
+        return badges.filter((badge: Badge) => badge.unlocked);
     }, [badges]);
 
     const getLockedBadges = useCallback(() => {
-        return badges.filter(badge => !badge.unlocked);
+        return badges.filter((badge: Badge) => !badge.unlocked);
     }, [badges]);
 
     const getBadgeProgress = useCallback((badgeId: string) => {
@@ -43,7 +43,7 @@ export function useBadgeSystem() {
             legendary: 0
         };
 
-        badges.forEach(badge => {
+        badges.forEach((badge: Badge) => {
             if (badge.rarity && rarityCount[badge.rarity as keyof typeof rarityCount] !== undefined) {
                 rarityCount[badge.rarity as keyof typeof rarityCount]++;
             }
@@ -61,7 +61,7 @@ export function useBadgeSystem() {
             legendary: 0
         };
 
-        unlockedBadges.forEach(badge => {
+        unlockedBadges.forEach((badge: Badge) => {
             if (badge.rarity && rarityCount[badge.rarity as keyof typeof rarityCount] !== undefined) {
                 rarityCount[badge.rarity as keyof typeof rarityCount]++;
             }

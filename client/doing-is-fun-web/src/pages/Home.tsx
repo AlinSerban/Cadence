@@ -15,11 +15,11 @@ export default function Home({ onRegisterClick, onLoginClick }: HomeProps) {
     const { level, progress, xpToNext } = getXpProgress(xp);
 
     // Only fetch data if user is logged in
-    const { data: todaySummary, isLoading: summaryLoading } = useGetTodaySummaryQuery(undefined, {
+    const { data: todaySummary } = useGetTodaySummaryQuery(undefined, {
         skip: !user
     });
 
-    useGetBoardHistoryQuery(7, {
+    const { data: recentData } = useGetBoardHistoryQuery(7, {
         skip: !user
     });
 
@@ -98,7 +98,7 @@ export default function Home({ onRegisterClick, onLoginClick }: HomeProps) {
 
     // If user is logged in, show personalized dashboard preview
     const recentCards = recentData?.cards || [];
-    const completedToday = recentCards.filter(card => {
+    const completedToday = recentCards.filter((card: any) => {
         const today = (() => {
             const now = new Date();
             const year = now.getFullYear();

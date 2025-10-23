@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useGetBoardHistoryQuery, useTestBoardDataQuery } from '../../store/api';
+import { useGetBoardHistoryQuery } from '../../store/api';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../store';
 import { LineChart } from './LineChart';
