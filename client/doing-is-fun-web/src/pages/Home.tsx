@@ -15,7 +15,7 @@ export default function Home({ onRegisterClick, onLoginClick }: HomeProps) {
     const { level, progress, xpToNext } = getXpProgress(xp);
 
     // Only fetch data if user is logged in
-    const { data: todaySummary } = useGetTodaySummaryQuery(undefined, {
+    useGetTodaySummaryQuery(undefined, {
         skip: !user
     });
 

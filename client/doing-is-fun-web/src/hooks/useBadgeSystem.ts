@@ -9,27 +9,27 @@ export function useBadgeSystem() {
     const isLoading = false; // BadgeState doesn't have isLoading
 
     const getBadgeById = useCallback((badgeId: string) => {
-        return badges.find((badge: Badge) => badge.id === badgeId);
+        return badges.find((badge: Badge) => badge.id.toString() === badgeId);
     }, [badges]);
 
     const getBadgesByCategory = useCallback((category: string) => {
-        return badges.filter((badge: Badge) => badge.category === category);
+        return badges.filter((badge: Badge) => (badge as any).category === category);
     }, [badges]);
 
     const getUnlockedBadges = useCallback(() => {
-        return badges.filter((badge: Badge) => badge.unlocked);
+        return badges.filter((badge: Badge) => (badge as any).unlocked);
     }, [badges]);
 
     const getLockedBadges = useCallback(() => {
-        return badges.filter((badge: Badge) => !badge.unlocked);
+        return badges.filter((badge: Badge) => !(badge as any).unlocked);
     }, [badges]);
 
     const getBadgeProgress = useCallback((badgeId: string) => {
         const badge = getBadgeById(badgeId);
         if (!badge) return { progress: 0, total: 0, percentage: 0 };
 
-        const progress = badge.progress || 0;
-        const total = badge.requirement || 1;
+        const progress = (badge as any).progress || 0;
+        const total = (badge as any).requirement || 1;
         const percentage = Math.min((progress / total) * 100, 100);
 
         return { progress, total, percentage };
@@ -44,8 +44,9 @@ export function useBadgeSystem() {
         };
 
         badges.forEach((badge: Badge) => {
-            if (badge.rarity && rarityCount[badge.rarity as keyof typeof rarityCount] !== undefined) {
-                rarityCount[badge.rarity as keyof typeof rarityCount]++;
+            const rarity = (badge as any).rarity;
+            if (rarity && rarityCount[rarity as keyof typeof rarityCount] !== undefined) {
+                rarityCount[rarity as keyof typeof rarityCount]++;
             }
         });
 
@@ -62,8 +63,9 @@ export function useBadgeSystem() {
         };
 
         unlockedBadges.forEach((badge: Badge) => {
-            if (badge.rarity && rarityCount[badge.rarity as keyof typeof rarityCount] !== undefined) {
-                rarityCount[badge.rarity as keyof typeof rarityCount]++;
+            const rarity = (badge as any).rarity;
+            if (rarity && rarityCount[rarity as keyof typeof rarityCount] !== undefined) {
+                rarityCount[rarity as keyof typeof rarityCount]++;
             }
         });
 
