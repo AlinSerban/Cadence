@@ -49,6 +49,18 @@ CREATE TABLE IF NOT EXISTS activity_columns (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
+-- Create badges table (needed before user_badges)
+CREATE TABLE IF NOT EXISTS badges (
+  id SERIAL PRIMARY KEY,
+  key VARCHAR(50) UNIQUE NOT NULL,
+  name VARCHAR(100) NOT NULL,
+  description TEXT,
+  icon_url VARCHAR(255),
+  category VARCHAR(50) DEFAULT 'general',
+  requirement_value INTEGER DEFAULT 0,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
 -- Create user badges table
 CREATE TABLE IF NOT EXISTS user_badges (
   id SERIAL PRIMARY KEY,
@@ -69,6 +81,8 @@ CREATE INDEX IF NOT EXISTS idx_activity_cards_date ON activity_cards(date);
 CREATE INDEX IF NOT EXISTS idx_activity_cards_status ON activity_cards(status);
 CREATE INDEX IF NOT EXISTS idx_activity_columns_user_id ON activity_columns(user_id);
 CREATE INDEX IF NOT EXISTS idx_activity_columns_date ON activity_columns(date);
+CREATE INDEX IF NOT EXISTS idx_badges_key ON badges(key);
+CREATE INDEX IF NOT EXISTS idx_badges_category ON badges(category);
 CREATE INDEX IF NOT EXISTS idx_user_badges_user_id ON user_badges(user_id);
 CREATE INDEX IF NOT EXISTS idx_user_badges_badge_id ON user_badges(badge_id);
 
