@@ -1,0 +1,141 @@
+-- Migration: Restructure app for custom activities, goals, and virtual partner
+-- This migration removes workout/nutrition tables and creates new activity system
+
+-- First, create new tables
+CREATE TABLE IF NOT EXISTS custom_activities (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  name VARCHAR(100) NOT NULL,
+  description TEXT,
+  color VARCHAR(7) DEFAULT '#3B82F6',
+  icon VARCHAR(10) DEFAULT '🎯',
+  category VARCHAR(50),
+  target_duration INTEGER, -- in minutes
+  created_at TIMESTAMP DEFAULT NOW(),
+  is_active BOOLEAN DEFAULT true
+);
+
+CREATE TABLE IF NOT EXISTS activity_goals (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  activity_id INTEGER REFERENCES custom_activities(id) ON DELETE CASCADE,
+  goal_type VARCHAR(10) CHECK (goal_type IN ('daily', 'weekly', 'monthly')),
+  target_frequency INTEGER NOT NULL,
+  target_duration INTEGER, -- optional total minutes
+  start_date DATE NOT NULL,
+  end_date DATE NOT NULL,
+  is_completed BOOLEAN DEFAULT false,
+  completed_count INTEGER DEFAULT 0,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Rename activities table to activity_logs and add new columns
+ALTER TABLE activities RENAME TO activity_logs;
+ALTER TABLE activity_logs ADD COLUMN IF NOT EXISTS activity_id INTEGER REFERENCES custom_activities(id) ON DELETE CASCADE;
+ALTER TABLE activity_logs ADD COLUMN IF NOT EXISTS goal_id INTEGER REFERENCES activity_goals(id) ON DELETE SET NULL;
+ALTER TABLE activity_logs ADD COLUMN IF NOT EXISTS notes TEXT;
+ALTER TABLE activity_logs ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT NOW();
+
+-- Create virtual partner table
+CREATE TABLE IF NOT EXISTS virtual_partners (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  name VARCHAR(50) DEFAULT 'Buddy',
+  species VARCHAR(20) DEFAULT 'cat' CHECK (species IN ('cat', 'dog', 'rabbit', 'panda', 'fox', 'owl')),
+  personality VARCHAR(20) DEFAULT 'playful' CHECK (personality IN ('playful', 'calm', 'energetic', 'wise', 'sassy')),
+  current_mood VARCHAR(20) DEFAULT 'happy' CHECK (current_mood IN ('happy', 'excited', 'proud', 'concerned', 'sleepy', 'celebrating')),
+  level INTEGER DEFAULT 1,
+  xp INTEGER DEFAULT 0,
+  last_interaction TIMESTAMP DEFAULT NOW(),
+  total_interactions INTEGER DEFAULT 0,
+  favorite_activities TEXT[], -- array of activity names
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Create partner interactions table
+CREATE TABLE IF NOT EXISTS partner_interactions (
+  id SERIAL PRIMARY KEY,
+  partner_id INTEGER REFERENCES virtual_partners(id) ON DELETE CASCADE,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  interaction_type VARCHAR(20) CHECK (interaction_type IN ('mood_change', 'celebration', 'encouragement', 'reminder')),
+  message TEXT NOT NULL,
+  timestamp TIMESTAMP DEFAULT NOW()
+);
+
+-- Create indexes for better performance
+CREATE INDEX IF NOT EXISTS idx_custom_activities_user_id ON custom_activities(user_id);
+CREATE INDEX IF NOT EXISTS idx_custom_activities_active ON custom_activities(is_active);
+CREATE INDEX IF NOT EXISTS idx_activity_goals_user_id ON activity_goals(user_id);
+CREATE INDEX IF NOT EXISTS idx_activity_goals_activity_id ON activity_goals(activity_id);
+CREATE INDEX IF NOT EXISTS idx_activity_goals_active ON activity_goals(is_completed);
+CREATE INDEX IF NOT EXISTS idx_activity_logs_user_id ON activity_logs(user_id);
+CREATE INDEX IF NOT EXISTS idx_activity_logs_activity_id ON activity_logs(activity_id);
+CREATE INDEX IF NOT EXISTS idx_activity_logs_entry_date ON activity_logs(entry_date);
+CREATE INDEX IF NOT EXISTS idx_virtual_partners_user_id ON virtual_partners(user_id);
+CREATE INDEX IF NOT EXISTS idx_partner_interactions_user_id ON partner_interactions(user_id);
+
+-- Add triggers for updated_at
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+CREATE TRIGGER update_activity_goals_updated_at 
+    BEFORE UPDATE ON activity_goals 
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- Insert default virtual partner for existing users
+INSERT INTO virtual_partners (user_id, name, species, personality)
+SELECT 
+    id as user_id,
+    'Buddy' as name,
+    'cat' as species,
+    'playful' as personality
+FROM users
+WHERE NOT EXISTS (
+    SELECT 1 FROM virtual_partners WHERE user_id = users.id
+);
+
+-- Create some default activities for existing users
+INSERT INTO custom_activities (user_id, name, description, color, icon, category)
+SELECT 
+    id as user_id,
+    'Coding' as name,
+    'Focused coding sessions' as description,
+    '#3B82F6' as color,
+    '💻' as icon,
+    'work' as category
+FROM users
+WHERE NOT EXISTS (
+    SELECT 1 FROM custom_activities WHERE user_id = users.id AND name = 'Coding'
+);
+
+INSERT INTO custom_activities (user_id, name, description, color, icon, category)
+SELECT 
+    id as user_id,
+    'Reading' as name,
+    'Reading books or articles' as description,
+    '#10B981' as color,
+    '📚' as icon,
+    'learning' as category
+FROM users
+WHERE NOT EXISTS (
+    SELECT 1 FROM custom_activities WHERE user_id = users.id AND name = 'Reading'
+);
+
+INSERT INTO custom_activities (user_id, name, description, color, icon, category)
+SELECT 
+    id as user_id,
+    'Exercise' as name,
+    'Physical exercise and workouts' as description,
+    '#F59E0B' as color,
+    '💪' as icon,
+    'health' as category
+FROM users
+WHERE NOT EXISTS (
+    SELECT 1 FROM custom_activities WHERE user_id = users.id AND name = 'Exercise'
+);

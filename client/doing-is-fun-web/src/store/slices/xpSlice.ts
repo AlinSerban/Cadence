@@ -13,15 +13,14 @@ export const xpSlice = createSlice({
   reducers: {
     setXp(state, action: PayloadAction<number>) {
       state.current = action.payload;
-      state.level = Math.max(1, Math.floor(Math.sqrt(state.current / 100)) + 1);
+      // New formula: Linear progression with slight curve - much faster leveling
+      state.level = Math.max(1, Math.floor(state.current / 50) + 1);
       state.justLeveled = false;
     },
     addXp(state, action: PayloadAction<number>) {
       state.current += action.payload;
-      const newLevel = Math.max(
-        1,
-        Math.floor(Math.sqrt(state.current / 100)) + 1
-      );
+      // New formula: Linear progression with slight curve - much faster leveling
+      const newLevel = Math.max(1, Math.floor(state.current / 50) + 1);
       if (newLevel > state.level) {
         state.level = newLevel;
         state.justLeveled = true;

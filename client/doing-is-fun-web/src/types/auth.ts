@@ -11,7 +11,6 @@ export type RegisterPayload = {
   username: string;
   password: string;
   confirmPassword: string;
-  terms: boolean;
 };
 
 export type RegisterModalProps = {

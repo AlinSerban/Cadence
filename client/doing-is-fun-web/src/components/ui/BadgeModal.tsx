@@ -15,19 +15,23 @@ export function BadgeModal() {
     const badge: Badge = unlocked[0];
 
     return (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white p-8 rounded shadow-lg text-center max-w-sm">
-                {badge.icon_url && (
-                    <img src={badge.icon_url} alt={badge.name} className="mx-auto mb-4 h-16 w-16" />
-                )}
-                <h2 className="text-2xl font-bold mb-2">🏅 {badge.name}</h2>
-                <p className="mb-4">{badge.description}</p>
-                <button
-                    className="mt-2 px-4 py-2 bg-blue-600 text-white rounded"
-                    onClick={() => dispatch(clearUnlocked())}
-                >
-                    Awesome!
-                </button>
+        <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50">
+            <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-8 rounded-2xl shadow-2xl text-center max-w-md mx-4 border border-white/20 backdrop-blur-sm">
+                <div className="bg-white/90 backdrop-blur-sm rounded-xl p-6 shadow-lg">
+                    <div className="text-6xl mb-4 animate-bounce">🏆</div>
+                    <h2 className="text-3xl font-bold text-gray-900 mb-2">Badge Unlocked!</h2>
+                    <div className="text-4xl mb-3">{badge.icon_url || '🏅'}</div>
+                    <h3 className="text-2xl font-bold text-blue-600 mb-3">
+                        {badge.name}
+                    </h3>
+                    <p className="text-gray-600 mb-6 text-lg">{badge.description}</p>
+                    <button
+                        className="px-8 py-3 bg-blue-600 text-white rounded-xl font-semibold text-lg hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                        onClick={() => dispatch(clearUnlocked())}
+                    >
+                        Awesome!
+                    </button>
+                </div>
             </div>
         </div>
     );

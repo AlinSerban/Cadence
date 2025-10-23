@@ -24,7 +24,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
                     credentials: "include"
                 });
                 const data = await res.json();
-                console.log("🔄 refresh response:", res.status, data);
 
                 if (res.ok && data.accessToken) {
                     const profileRes = await fetch("/api/auth/me", {
@@ -51,10 +50,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }, [dispatch])
 
     if (loading) {
-        return <div>Loading...</div>;
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                    <p className="text-gray-600 font-medium">Initializing...</p>
+                </div>
+            </div>
+        );
     }
 
-    const ctxValue: AuthContextType = { user, accessToken, loading };
+    const ctxValue: AuthContextType = {
+        user,
+        accessToken,
+        loading,
+        setUser: () => { }, // Placeholder - would be implemented with proper state management
+        setAccessToken: () => { } // Placeholder - would be implemented with proper state management
+    };
 
     return <AuthContext.Provider value={ctxValue}>{children}</AuthContext.Provider>;
 }

@@ -4,6 +4,11 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js",
+    "migrate": "node scripts/migrate.js run",
+    "migrate:status": "node scripts/migrate.js status",
+    "migrate:check": "node scripts/migrate.js check",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -17,9 +22,12 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
+    "ioredis": "^5.7.0",
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.16.3",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "winston": "^3.18.3",
+    "winston-daily-rotate-file": "^5.0.0"
   }
 }
