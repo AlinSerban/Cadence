@@ -3,6 +3,8 @@ import { useSelector } from 'react-redux';
 import type { RootState } from '../store';
 import type { Badge } from '../types/activityBoard';
 
+// Deployment trigger - TypeScript fixes applied
+
 export function useBadgeSystem() {
     const [recentlyUnlocked, setRecentlyUnlocked] = useState<Badge[]>([]);
     const badges = useSelector((state: RootState) => state.badge.unlocked || []);
