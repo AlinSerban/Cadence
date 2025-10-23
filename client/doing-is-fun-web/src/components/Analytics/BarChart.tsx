@@ -9,8 +9,8 @@ interface BarChartProps {
     options: any;
 }
 
-export const BarChart = forwardRef<ChartJS, BarChartProps>(({ data, options }, ref) => {
-    const chartRef = useRef<ChartJS>(null);
+export const BarChart = forwardRef<ChartJS<'bar'>, BarChartProps>(({ data, options }, ref) => {
+    const chartRef = useRef<ChartJS<'bar'>>(null);
 
     useImperativeHandle(ref, () => chartRef.current!, []);
 

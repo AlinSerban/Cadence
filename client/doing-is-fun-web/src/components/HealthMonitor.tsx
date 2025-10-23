@@ -3,7 +3,7 @@
  * Displays system health status for administrators
  */
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 interface HealthStatus {
     status: 'healthy' | 'unhealthy' | 'warning';

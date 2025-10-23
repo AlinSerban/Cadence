@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../store';
-import type { Badge } from '../types/tracking';
+import type { Badge } from '../types/activityBoard';
 
 export function useBadgeSystem() {
     const [recentlyUnlocked, setRecentlyUnlocked] = useState<Badge[]>([]);
-    const badges = useSelector((state: RootState) => state.badges.badges || []);
-    const isLoading = useSelector((state: RootState) => state.badges.isLoading);
+    const badges = useSelector((state: RootState) => state.badge.badges || []);
+    const isLoading = useSelector((state: RootState) => state.badge.isLoading);
 
     const getBadgeById = useCallback((badgeId: string) => {
         return badges.find(badge => badge.id === badgeId);

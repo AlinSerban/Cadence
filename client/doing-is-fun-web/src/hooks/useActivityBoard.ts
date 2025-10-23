@@ -16,7 +16,6 @@ import type {
 } from '../types/activityBoard';
 
 export function useActivityBoard(initialDate?: string) {
-    const dispatch = useDispatch();
 
     const [currentDate, setCurrentDate] = useState(() => {
         if (initialDate) return initialDate;
@@ -102,7 +101,7 @@ export function useActivityBoard(initialDate?: string) {
         setShowEditCard(true);
     }, []);
 
-    const handleEditColumn = useCallback((column: BoardColumn) => {
+    const handleEditColumn = useCallback((_column: BoardColumn) => {
         // TODO: Implement column editing
     }, []);
 

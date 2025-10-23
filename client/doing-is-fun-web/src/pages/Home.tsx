@@ -19,7 +19,7 @@ export default function Home({ onRegisterClick, onLoginClick }: HomeProps) {
         skip: !user
     });
 
-    const { data: recentData } = useGetBoardHistoryQuery(7, {
+    useGetBoardHistoryQuery(7, {
         skip: !user
     });
 

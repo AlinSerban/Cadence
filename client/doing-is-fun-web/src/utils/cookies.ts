@@ -1,5 +1,3 @@
-import { useCookieConsent } from '../context/CookieContext';
-
 // Cookie utility functions
 export const setCookie = (name: string, value: string, days: number = 365) => {
     const expires = new Date();

@@ -9,8 +9,8 @@ interface DoughnutChartProps {
     options: any;
 }
 
-export const DoughnutChart = forwardRef<ChartJS, DoughnutChartProps>(({ data, options }, ref) => {
-    const chartRef = useRef<ChartJS>(null);
+export const DoughnutChart = forwardRef<ChartJS<'doughnut'>, DoughnutChartProps>(({ data, options }, ref) => {
+    const chartRef = useRef<ChartJS<'doughnut'>>(null);
 
     useImperativeHandle(ref, () => chartRef.current!, []);
 

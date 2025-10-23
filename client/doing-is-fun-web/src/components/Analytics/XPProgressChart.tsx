@@ -8,8 +8,7 @@ export function XPProgressChart() {
     const [dateRange, setDateRange] = useState<'7d' | '30d' | '90d'>('7d');
     const { current: xp } = useSelector((state: RootState) => state.xp);
     const days = dateRange === '7d' ? 7 : dateRange === '30d' ? 30 : 90;
-    const { data: boardData, isLoading, error } = useGetBoardHistoryQuery(days);
-    const { data: testData } = useTestBoardDataQuery();
+    const { data: boardData, isLoading } = useGetBoardHistoryQuery(days);
 
 
     const handleDateRangeChange = (newRange: '7d' | '30d' | '90d') => {
@@ -28,7 +27,7 @@ export function XPProgressChart() {
     }
 
     const cards = boardData?.cards || [];
-    const xpData = generateXPData(cards, dateRange, xp);
+    const xpData = generateXPData(cards, dateRange);
 
     const data = {
         labels: xpData.labels,
@@ -155,7 +154,7 @@ export function XPProgressChart() {
     );
 }
 
-function generateXPData(cards: any[], range: '7d' | '30d' | '90d', currentXP: number) {
+function generateXPData(cards: any[], range: '7d' | '30d' | '90d') {
     const days = range === '7d' ? 7 : range === '30d' ? 30 : 90;
     const labels: string[] = [];
     const values: number[] = [];
