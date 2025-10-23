@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useGetBoardHistoryQuery } from '../../store/api';
 import { BarChart } from './BarChart';
 import { DoughnutChart } from './DoughnutChart';
@@ -7,7 +7,7 @@ import { Chart as ChartJS } from 'chart.js';
 export function CategoryCharts() {
     const [chartType, setChartType] = useState<'bar' | 'doughnut'>('bar');
     const { data: boardData, isLoading } = useGetBoardHistoryQuery(30);
-    const chartRef = useRef<ChartJS | null>(null);
+    const chartRef = useRef<ChartJS<'bar' | 'doughnut'> | null>(null);
 
     const handleChartTypeChange = (newType: 'bar' | 'doughnut') => {
         // Destroy existing chart before switching
@@ -199,14 +199,14 @@ export function CategoryCharts() {
                 {chartType === 'bar' ? (
                     <BarChart
                         key="bar-chart"
-                        ref={chartRef}
+                        ref={chartRef as React.Ref<ChartJS<'bar'>>}
                         data={barData}
                         options={barOptions}
                     />
                 ) : (
                     <DoughnutChart
                         key="doughnut-chart"
-                        ref={chartRef}
+                        ref={chartRef as React.Ref<ChartJS<'doughnut'>>}
                         data={doughnutData}
                         options={doughnutOptions}
                     />
