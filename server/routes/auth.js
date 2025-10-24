@@ -70,7 +70,7 @@ router.post("/register", async (req, res) => {
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: COOKIE_SECURE,
-      sameSite: "Lax",
+      sameSite: "None",    // Most permissive for cross-origin
       path: "/",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
@@ -137,7 +137,7 @@ router.post("/login", rateLimitLogin, async (req, res) => {
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
     secure: COOKIE_SECURE,
-    sameSite: "Lax",
+    sameSite: "None",    // Most permissive for cross-origin
     path: "/",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
@@ -147,21 +147,38 @@ router.post("/login", rateLimitLogin, async (req, res) => {
 });
 
 router.post("/refresh", rateLimitRefresh, async (req, res) => {
+  console.log("🔄 Refresh endpoint called");
+  console.log("🍪 Cookies received:", req.cookies);
+  console.log("🌐 Origin header:", req.headers.origin);
+  console.log("🔗 Referer header:", req.headers.referer);
+  
   const token = req.cookies.refreshToken;
-  if (!token) return res.status(401).json({ error: "No refresh token" });
+  console.log("🔑 Refresh token present:", !!token);
+  
+  if (!token) {
+    console.log("❌ No refresh token found");
+    return res.status(401).json({ error: "No refresh token" });
+  }
 
   try {
+    console.log("🔍 Verifying refresh token...");
     const payload = jwt.verify(token, process.env.REFRESH_SECRET);
     const { jti, id: userId } = payload;
+    console.log("✅ Token verified, user ID:", userId, "JTI:", jti);
+    
     const stored = await pool.query(
       "SELECT 1 FROM refresh_tokens WHERE token_id=$1 AND user_id=$2",
       [jti, userId]
     );
 
     if (!stored.rowCount) {
+      console.log("❌ Refresh token not found in database");
       return res.status(403).json({ error: "Refresh token revoked" });
     }
+    
+    console.log("✅ Refresh token found in database");
 
+    console.log("🗑️ Deleting old refresh token from database");
     await pool.query("DELETE FROM refresh_tokens WHERE token_id=$1", [jti]);
 
     const {
@@ -174,19 +191,22 @@ router.post("/refresh", rateLimitRefresh, async (req, res) => {
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7);
 
+    console.log("💾 Inserting new refresh token into database");
     await pool.query(
       "INSERT INTO refresh_tokens(token_id, user_id, expires_at) VALUES($1, $2, $3)",
       [newJti, userId, expiresAt]
     );
 
+    console.log("🍪 Setting new refresh token cookie");
     res.cookie("refreshToken", newRefresh, {
       httpOnly: true,
       secure: COOKIE_SECURE,
-      sameSite: "Lax",
+      sameSite: "None",    // Most permissive for cross-origin
       path: "/",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
+    console.log("✅ Refresh successful, sending new access token");
     res.json({ accessToken });
   } catch (err) {
     console.error("Refresh failed:", err);
@@ -202,7 +222,7 @@ router.post("/logout", authMiddleware, async (req, res) => {
   res.clearCookie("refreshToken", {
     httpOnly: true,
     secure: COOKIE_SECURE,
-    sameSite: "Lax",
+    sameSite: "None",    // Most permissive for cross-origin
     path: "/",
   });
   return res.json({ message: "Logged out successfully" });
