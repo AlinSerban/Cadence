@@ -21,7 +21,9 @@ export default function Profile() {
     const { current: currentXp, level } = useAppSelector((state) => state.xp);
 
     // Get badges data
-    const { data: badgesData } = useGetAllBadgesQuery();
+    const { data: badgesData } = useGetAllBadgesQuery(undefined, {
+        skip: !user
+    });
     const badges = badgesData?.badges || [];
     const unlockedBadgesCount = badges.filter((badge: any) => badge.is_unlocked).length;
 

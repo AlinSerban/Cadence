@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { useSelector } from 'react-redux';
 import {
     useGetBoardDataQuery,
     useCreateCardMutation,
@@ -7,6 +8,7 @@ import {
     useCreateColumnMutation,
     useDeleteColumnMutation
 } from '../store/api';
+import type { RootState } from '../store';
 import type {
     CreateCardRequest,
     CreateColumnRequest,
@@ -15,6 +17,7 @@ import type {
 } from '../types/activityBoard';
 
 export function useActivityBoard(initialDate?: string) {
+    const user = useSelector((state: RootState) => state.auth.user);
 
     const [currentDate, setCurrentDate] = useState(() => {
         if (initialDate) return initialDate;
@@ -34,7 +37,9 @@ export function useActivityBoard(initialDate?: string) {
     const [showMainBoardCompleted, setShowMainBoardCompleted] = useState(false);
 
     // API hooks
-    const { data: boardData, isLoading, error } = useGetBoardDataQuery(currentDate);
+    const { data: boardData, isLoading, error } = useGetBoardDataQuery(currentDate, {
+        skip: !user
+    });
     const [createCard] = useCreateCardMutation();
     const [updateCard] = useUpdateCardMutation();
     const [deleteCard] = useDeleteCardMutation();

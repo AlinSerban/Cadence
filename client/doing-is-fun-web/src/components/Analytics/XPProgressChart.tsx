@@ -6,9 +6,12 @@ import { LineChart } from './LineChart';
 
 export function XPProgressChart() {
     const [dateRange, setDateRange] = useState<'7d' | '30d' | '90d'>('7d');
+    const user = useSelector((state: RootState) => state.auth.user);
     const { current: xp } = useSelector((state: RootState) => state.xp);
     const days = dateRange === '7d' ? 7 : dateRange === '30d' ? 30 : 90;
-    const { data: boardData, isLoading } = useGetBoardHistoryQuery(days);
+    const { data: boardData, isLoading } = useGetBoardHistoryQuery(days, {
+        skip: !user
+    });
 
 
     const handleDateRangeChange = (newRange: '7d' | '30d' | '90d') => {

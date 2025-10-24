@@ -1,12 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useGetBoardHistoryQuery } from '../../store/api';
+import { useSelector } from 'react-redux';
 import { BarChart } from './BarChart';
 import { DoughnutChart } from './DoughnutChart';
+import type { RootState } from '../../store';
 import { Chart as ChartJS } from 'chart.js';
 
 export function CategoryCharts() {
     const [chartType, setChartType] = useState<'bar' | 'doughnut'>('bar');
-    const { data: boardData, isLoading } = useGetBoardHistoryQuery(30);
+    const user = useSelector((state: RootState) => state.auth.user);
+    const { data: boardData, isLoading } = useGetBoardHistoryQuery(30, {
+        skip: !user
+    });
     const chartRef = useRef<ChartJS<'bar' | 'doughnut'> | null>(null);
 
     const handleChartTypeChange = (newType: 'bar' | 'doughnut') => {

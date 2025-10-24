@@ -1,9 +1,14 @@
 import { useState } from 'react';
 import { useGetBoardHistoryQuery } from '../../store/api';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../../store';
 
 export function ActivityHeatmap() {
     const [weekOffset, setWeekOffset] = useState(0);
-    const { data: boardData, isLoading } = useGetBoardHistoryQuery(30);
+    const user = useSelector((state: RootState) => state.auth.user);
+    const { data: boardData, isLoading } = useGetBoardHistoryQuery(30, {
+        skip: !user
+    });
 
     if (isLoading) {
         return (

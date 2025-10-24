@@ -3,6 +3,8 @@ import { useSelector } from 'react-redux';
 import type { RootState } from '../../store';
 
 export function StatsCards() {
+    const user = useSelector((state: RootState) => state.auth.user);
+    
     const today = (() => {
         const now = new Date();
         const year = now.getFullYear();
@@ -10,8 +12,12 @@ export function StatsCards() {
         const day = String(now.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
     })();
-    const { data: boardData, isLoading } = useGetBoardDataQuery(today);
-    const { data: historyData, isLoading: historyLoading } = useGetBoardHistoryQuery(30);
+    const { data: boardData, isLoading } = useGetBoardDataQuery(today, {
+        skip: !user
+    });
+    const { data: historyData, isLoading: historyLoading } = useGetBoardHistoryQuery(30, {
+        skip: !user
+    });
     const { level, current: xp } = useSelector((state: RootState) => state.xp);
 
     if (isLoading || historyLoading) {
