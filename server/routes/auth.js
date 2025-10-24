@@ -70,8 +70,8 @@ router.post("/register", async (req, res) => {
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: COOKIE_SECURE,
-      sameSite: "Strict",
-      path: "/api/auth",
+      sameSite: "Lax",
+      path: "/",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
@@ -137,8 +137,8 @@ router.post("/login", rateLimitLogin, async (req, res) => {
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
     secure: COOKIE_SECURE,
-    sameSite: "Strict",
-    path: "/api/auth",
+    sameSite: "Lax",
+    path: "/",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 
@@ -182,8 +182,8 @@ router.post("/refresh", rateLimitRefresh, async (req, res) => {
     res.cookie("refreshToken", newRefresh, {
       httpOnly: true,
       secure: COOKIE_SECURE,
-      sameSite: "Strict",
-      path: "/api/auth",
+      sameSite: "Lax",
+      path: "/",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -202,8 +202,8 @@ router.post("/logout", authMiddleware, async (req, res) => {
   res.clearCookie("refreshToken", {
     httpOnly: true,
     secure: COOKIE_SECURE,
-    sameSite: "Strict",
-    path: "/api/auth",
+    sameSite: "Lax",
+    path: "/",
   });
   return res.json({ message: "Logged out successfully" });
 });
