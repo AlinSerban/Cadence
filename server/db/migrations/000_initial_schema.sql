@@ -35,7 +35,8 @@ CREATE TABLE IF NOT EXISTS activity_cards (
   column_id INTEGER,
   xp_value INTEGER DEFAULT 25,
   created_at TIMESTAMP DEFAULT NOW(),
-  completed_at TIMESTAMP
+  completed_at TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT NOW()
 );
 
 -- Create activity columns table
@@ -46,7 +47,8 @@ CREATE TABLE IF NOT EXISTS activity_columns (
   color VARCHAR(7) DEFAULT '#3B82F6',
   date DATE NOT NULL,
   order_index INTEGER DEFAULT 0,
-  created_at TIMESTAMP DEFAULT NOW()
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
 );
 
 -- Create badges table (needed before user_badges)
@@ -97,4 +99,12 @@ $$ language 'plpgsql';
 
 CREATE TRIGGER update_users_updated_at 
     BEFORE UPDATE ON users 
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_activity_cards_updated_at 
+    BEFORE UPDATE ON activity_cards 
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_activity_columns_updated_at 
+    BEFORE UPDATE ON activity_columns 
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
