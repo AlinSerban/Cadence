@@ -6,6 +6,8 @@ import { clearCredentials, setCredentials } from "../store/slices/authSlice";
 import type { RootState } from "../store";
 import { setXp } from "../store/slices/xpSlice";
 
+const ENDPOINT = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
 interface AuthProviderProps {
     children: ReactNode;
 }
@@ -19,14 +21,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
     useEffect(() => {
         async function tryRefresh() {
             try {
-                const res = await fetch("/api/auth/refresh", {
+                const res = await fetch(`${ENDPOINT}/api/auth/refresh`, {
                     method: "POST",
                     credentials: "include"
                 });
                 const data = await res.json();
 
                 if (res.ok && data.accessToken) {
-                    const profileRes = await fetch("/api/auth/me", {
+                    const profileRes = await fetch(`${ENDPOINT}/api/auth/me`, {
                         headers: { Authorization: `Bearer ${data.accessToken}` }
                     })
                     const userData: User & { xp: number } = await profileRes.json();
