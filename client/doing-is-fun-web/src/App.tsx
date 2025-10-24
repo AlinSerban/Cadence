@@ -44,7 +44,6 @@ function App() {
                     <Dashboard />
                   </ProtectedRoute>
                 } />
-              <Route path="*" element={<Navigate to="/" />} />
               <Route
                 path="/profile"
                 element={
@@ -69,6 +68,7 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </main>
           <Footer />
