@@ -170,9 +170,13 @@ router.post("/refresh", rateLimitRefresh, async (req, res) => {
       jti: newJti,
     } = generateTokens(userId);
 
+    // Calculate expiration date (7 days from now)
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7);
+
     await pool.query(
-      "INSERT INTO refresh_tokens(token_id, user_id) VALUES($1,$2)",
-      [newJti, userId]
+      "INSERT INTO refresh_tokens(token_id, user_id, expires_at) VALUES($1, $2, $3)",
+      [newJti, userId, expiresAt]
     );
 
     res.cookie("refreshToken", newRefresh, {
