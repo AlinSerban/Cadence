@@ -20,7 +20,7 @@ import type {
 import type { ActivityCard, BoardColumn, CreateCardRequest, CreateColumnRequest, Badge } from '../types/activityBoard';
 import { addXp, levelUp } from "./slices/xpSlice";
 import { addBadges } from "./slices/badgeSlice";
-
+const ENDPOINT = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 interface TrackResponse {
   message: string;
@@ -32,7 +32,7 @@ interface TrackResponse {
 export const api = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:3000/api",
+    baseUrl: `${ENDPOINT}/api`,
     credentials: "include",
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).auth.accessToken;

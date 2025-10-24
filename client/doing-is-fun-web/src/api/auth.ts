@@ -1,6 +1,6 @@
 import { type RegisterPayload, type LoginPayload } from "../types/auth";
-//const ENDPOINT = import.meta.env.VITE_API_URL || "http://localhost:3000";
-const ENDPOINT = "http://localhost:3000";
+const ENDPOINT = import.meta.env.VITE_API_URL || "http://localhost:3000";
+//const ENDPOINT = "http://localhost:3000";
 export async function register(data: RegisterPayload) {
   const res = await fetch(`${ENDPOINT}/api/auth/register`, {
     method: "POST",
