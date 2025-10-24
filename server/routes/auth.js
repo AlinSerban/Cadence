@@ -58,9 +58,13 @@ router.post("/register", async (req, res) => {
     const user = result.rows[0];
     const { accessToken, refreshToken, jti } = generateTokens(user.id);
 
+    // Calculate expiration date (7 days from now)
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7);
+
     await pool.query(
-      "INSERT INTO refresh_tokens(token_id, user_id) VALUES($1,$2)",
-      [jti, user.id]
+      "INSERT INTO refresh_tokens(token_id, user_id, expires_at) VALUES($1, $2, $3)",
+      [jti, user.id, expiresAt]
     );
 
     res.cookie("refreshToken", refreshToken, {
@@ -121,9 +125,13 @@ router.post("/login", rateLimitLogin, async (req, res) => {
 
   const { accessToken, refreshToken, jti } = generateTokens(user.id);
 
+  // Calculate expiration date (7 days from now)
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + 7);
+
   await pool.query(
-    "INSERT INTO refresh_tokens(token_id, user_id) VALUES($1,$2)",
-    [jti, user.id]
+    "INSERT INTO refresh_tokens(token_id, user_id, expires_at) VALUES($1, $2, $3)",
+    [jti, user.id, expiresAt]
   );
 
   res.cookie("refreshToken", refreshToken, {
